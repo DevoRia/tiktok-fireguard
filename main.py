@@ -1,3 +1,4 @@
+import argparse
 import pyautogui
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -12,13 +13,16 @@ TARGET_USER = os.getenv("TARGET_USER", "Bob")
 MESSAGE = os.getenv("MESSAGE", "Ping")
 RUN_MODE = os.getenv("RUN_MODE", "single")
 SCRIPT_PATH = os.path.abspath(__file__)
+PROXY = os.getenv("PROXY")
 
 
-def create_driver():
+def create_driver(proxy=None):
     options = Options()
     options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     )
+    if proxy:
+        options.add_argument(f"--proxy-server={proxy}")
     driver = webdriver.Chrome(options=options)
     return driver
 
@@ -74,8 +78,8 @@ def setup_cron_job():
         print("✅ Cron job added. The script will now run daily at 8:00 AM.")
 
 
-def main():
-    driver = create_driver()
+def main(proxy=None):
+    driver = create_driver(proxy)
     try:
         if not os.path.exists(COOKIES_FILE):
             login_manually(driver)
@@ -90,9 +94,14 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--proxy", help="Proxy server address", default=PROXY)
+    args = parser.parse_args()
+    proxy = args.proxy
+
     if RUN_MODE == "single":
         print("🚀 Running in single mode...")
-        main()
+        main(proxy)
     elif RUN_MODE == "cron":
         print("⏰ Setting up cron mode...")
         setup_cron_job()
