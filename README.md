@@ -20,11 +20,16 @@ This project automates the process of sending messages on TikTok using Python an
     - `RUN_MODE`: Defines the mode of script execution. Use:
       - `single` for a one-time execution.
       - `cron` to configure daily execution using a cron job.
+    - `PROXY`: Optional HTTP proxy server (e.g. `http://127.0.0.1:8080`). This can also be set via the `--proxy` CLI option.
 
 3. Run the script:
    - **Single Mode** (default):
      ```bash
-     RUN_MODE=single TARGET_USER=Alice python main.py
+     RUN_MODE=single TARGET_USER=Alice PROXY=http://127.0.0.1:8080 python main.py
+     ```
+     Or using the CLI option:
+     ```bash
+     python main.py --proxy http://127.0.0.1:8080
      ```
    - **Cron Mode**:
      ```bash
